@@ -21,7 +21,7 @@ def linear_kernel(X1, X2):
     type       np.array()
     """
     # TODO: implement
-    return None
+    return np.matmul(X1, X2)
 
 
 def nonlinear_kernel(X1, X2, sigma=0.5):
@@ -60,12 +60,24 @@ def objective_function(X, y, a, kernel):
     """
     # TODO: implement
     
-    # Reshape a and y to be column vectors
+    nSamples = y.shape[0]
 
+    # Reshape a and y to be column vectors
+    y.reshape(-1, 1)
+    a.reshape(-1, 1)
+
+    
     # Compute the value of the objective function
     # The first term is the sum of all Lagrange multipliers
     # The second term involves the kernel matrix, the labels and the Lagrange multipliers
-    return None
+    alphaSum = sum(a)
+
+    secondSum = 0
+    for i in range(0, nSamples):
+        for j in range(i + 1, nSamples):
+            secondSum += a[i] * a[j] * y[i] * y[j] * (kernel(X[i], X[j]))
+
+    return alphaSum - 0.5 * secondSum
 
 
 class SVM(object):
@@ -151,19 +163,28 @@ class SVM(object):
         # constraints = ({'type': 'ineq', 'fun': ...},
         #                {'type': 'eq', 'fun': ...})
         
+          # All Alpha >= 0 and the sum of all alpha times y is equal to 0
+        constraints = ({'type': 'ineq', 'fun': (lambda alpha: alpha)}, 
+                       {'type': 'eq', 'fun': (lambda alpha: sum(alpha * y) == 0)})
         # TODO: Use minimize from scipy.optimize to find the optimal Lagrange multipliers
         
         # res = minimize(...)
         # self.a = ...
-        
+        alphaObjectiveFunction = lambda alpha: objective_function(X, y, alpha, self.kernel)
+        initialGuess = np.zeros(y.shape)
+
+
+        res = minimize(alphaObjectiveFunction, x0 = initialGuess, constraints = constraints)
+
         # TODO: Substitute into dual problem to find weights
         
         # self.w = ...
-        
+        self.w = sum(res[0] * y * X)
+
         # TODO: Substitute into a support vector to find bias
         
         # self.b = ...
-
+        self.b = ...
 
         return self
 
