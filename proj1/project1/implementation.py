@@ -65,8 +65,6 @@ def objective_function(X, y, a, kernel):
     # Reshape a and y to be column vectors
     y.reshape(-1, 1)
     a.reshape(-1, 1)
-
-    
     # Compute the value of the objective function
     # The first term is the sum of all Lagrange multipliers
     # The second term involves the kernel matrix, the labels and the Lagrange multipliers
@@ -76,7 +74,6 @@ def objective_function(X, y, a, kernel):
     for i in range(0, nSamples):
         for j in range(i + 1, nSamples):
             secondSum += a[i] * a[j] * y[i] * y[j] * (kernel(X[i], X[j]))
-
     return alphaSum - 0.5 * secondSum
 
 
@@ -163,9 +160,13 @@ class SVM(object):
         # constraints = ({'type': 'ineq', 'fun': ...},
         #                {'type': 'eq', 'fun': ...})
         
-          # All Alpha >= 0 and the sum of all alpha times y is equal to 0
-        constraints = ({'type': 'ineq', 'fun': (lambda alpha: alpha)}, 
-                       {'type': 'eq', 'fun': (lambda alpha: sum(alpha * y) == 0)})
+          # Checks for the minimum value (if there is less than zero, then fails the contraint)
+        greaterThanZero = lambda alpha: min(alpha)
+          # Checks for the sum of alpha and y to equal 0
+        sumWithYEqualsZero = lambda alpha: sum(alpha * y)
+
+        constraints = ({'type': 'ineq', 'fun': greaterThanZero}, 
+                       {'type': 'eq', 'fun': sumWithYEqualsZero})
         # TODO: Use minimize from scipy.optimize to find the optimal Lagrange multipliers
         
         # res = minimize(...)
@@ -175,17 +176,15 @@ class SVM(object):
 
 
         res = minimize(alphaObjectiveFunction, x0 = initialGuess, constraints = constraints)
-
+        self.a = res.x
         # TODO: Substitute into dual problem to find weights
         
         # self.w = ...
-        self.w = sum(res[0] * y * X)
-
+        self.w = np.dot(self.a * y, X)
         # TODO: Substitute into a support vector to find bias
         
         # self.b = ...
-        self.b = ...
-
+        self.b = -0.5 * (max((np.dot(X[y == -1], self.w.T))) + min(np.dot( X[y == 1], self.w.T)))
         return self
 
     def predict(self, X):
