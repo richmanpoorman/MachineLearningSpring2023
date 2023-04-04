@@ -1,3 +1,9 @@
+# Matt & Bill
+#
+# QUESTIONS FOR JOE ROBINSON
+#       Does our fit function have the right idea?
+#       What is our theshold for the fit function?
+
 import numpy as np
 from scipy.optimize import minimize
 
@@ -188,6 +194,7 @@ class SVM(object):
         
         # self.w = ...
         self.w = np.dot(self.a * y, X)
+        # print(self.w)
         # TODO: Substitute into a support vector to find bias
         
         # self.b = ...
@@ -216,7 +223,7 @@ class SVM(object):
         result = np.matmul(X, weights)
 
         # assumes that result is a 1d array.
-        normalized = np.array([1 if x >= 0 else -1 for x in result])
+        normalized = np.array([1 if x >= -self.b else -1 for x in result])
 
         return normalized
 
