@@ -21,7 +21,7 @@ def linear_kernel(X1, X2):
     type       np.array()
     """
     # TODO: implement
-    return np.matmul(X1, X2)
+    return np.dot(X1, X2)
 
 
 def nonlinear_kernel(X1, X2, sigma=0.5):
@@ -74,6 +74,7 @@ def objective_function(X, y, a, kernel):
     for i in range(0, nSamples):
         for j in range(i + 1, nSamples):
             secondSum += a[i] * a[j] * y[i] * y[j] * (kernel(X[i], X[j]))
+
     return alphaSum - 0.5 * secondSum
 
 
@@ -164,7 +165,7 @@ class SVM(object):
         greaterThanZero = lambda alpha: min(alpha)
           # Checks for the sum of alpha and y to equal 0
         sumWithYEqualsZero = lambda alpha: sum(alpha * y)
-
+        
         constraints = ({'type': 'ineq', 'fun': greaterThanZero}, 
                        {'type': 'eq', 'fun': sumWithYEqualsZero})
         # TODO: Use minimize from scipy.optimize to find the optimal Lagrange multipliers
@@ -172,11 +173,17 @@ class SVM(object):
         # res = minimize(...)
         # self.a = ...
         alphaObjectiveFunction = lambda alpha: objective_function(X, y, alpha, self.kernel)
-        initialGuess = np.zeros(y.shape)
+        initialGuess = np.ones(y.shape)
 
 
-        res = minimize(alphaObjectiveFunction, x0 = initialGuess, constraints = constraints)
+        res = minimize(alphaObjectiveFunction, 
+                        x0 = initialGuess, 
+                        method = 'trust-constr', 
+                        # hess = lambda x: np.zeros((len(initialGuess), len(initialGuess))),
+                        constraints = constraints)
         self.a = res.x
+
+        print(res.message)
         # TODO: Substitute into dual problem to find weights
         
         # self.w = ...
@@ -204,7 +211,14 @@ class SVM(object):
         """
         # TODO: implement
 
-        return None
+        weights = self.w
+
+        result = np.matmul(X, weights)
+
+        # assumes that result is a 1d array.
+        normalized = np.array([1 if x >= 0 else -1 for x in result])
+
+        return normalized
 
     def outputs(X):
         """
