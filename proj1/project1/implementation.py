@@ -185,7 +185,7 @@ class SVM(object):
         # res = minimize(...)
         # self.a = ...
         alphaObjectiveFunction = lambda alpha: -objective_function(X, y, alpha, self.kernel)
-        initialGuess = np.ones(y.shape)
+        initialGuess = np.zeros(y.shape)
 
         options = {"maxiter": self.max_iter}
         res = minimize(alphaObjectiveFunction, 
