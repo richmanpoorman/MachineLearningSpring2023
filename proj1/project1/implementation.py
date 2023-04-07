@@ -187,22 +187,31 @@ class SVM(object):
         alphaObjectiveFunction = lambda alpha: -objective_function(X, y, alpha, self.kernel)
         initialGuess = np.zeros(y.shape)
 
-        options = {"maxiter": self.max_iter}
+        # options = {"maxiter": self.max_iter}
         res = minimize(alphaObjectiveFunction, 
                         x0 = initialGuess, 
                         # method = 'trust-constr', 
                         # hess = lambda x: np.zeros((len(initialGuess), len(initialGuess))),
-                        constraints = constraints, 
-                        options = options)
+                        constraints = constraints
+                        # , options = options
+                        )
         self.a = res.x
 
         print(res.message)
         # TODO: Substitute into dual problem to find weights
-        
-        # self.w = ...
-        self.w = np.dot( self.a * y, X )
 
-        # self.w = np.sum( self.a * y * X)
+        # for i in range(len(self.a)):
+        #     if (self.a[i] <= 1e-8):
+        #         self.a[i] = 0
+        
+        # # self.w = ...
+        # self.w = np.dot( self.a * y, X )
+        
+        self.w = np.zeros( X.shape[1] )
+        for row in range( X.shape[0] ):
+            if self.a[row] >= 1e-8:
+                self.w += self.a[row] * y[row] * X[row]
+
 
         # print(self.w)
         # TODO: Substitute into a support vector to find bias
