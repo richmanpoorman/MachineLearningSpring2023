@@ -249,25 +249,6 @@ class SVM(object):
 
         return normalized
 
-    def outputs(X):
-        """
-        Perform classification on samples in X.
-
-        For a one-class model, +1 or -1 is returned.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix} of shape (n_samples, n_features) or (n_samples_test, n_samples_train)
-
-        Returns
-        -------
-        y_pred : ndarray of shape (n_samples,)
-          Class labels for samples in X.
-        """
-        # TODO: implement
-
-        return None
-
     def score(self, X, y):
         """
         Return the mean accuracy on the given test data and labels. 
