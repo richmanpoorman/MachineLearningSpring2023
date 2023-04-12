@@ -27,7 +27,7 @@ def linear_kernel(X1, X2):
     type       np.array()
     """
 
-    return np.dot(X1, X2)
+    return np.dot(X1, X2.T)
 
 
 def nonlinear_kernel(X1, X2, sigma=0.5):
@@ -48,7 +48,21 @@ def nonlinear_kernel(X1, X2, sigma=0.5):
     # Compute the Euclidean distance between the input vectors
     # Compute the value of the Gaussian kernel function
     # Return the kernel value
-    return None
+    print(X1)
+
+    # euclideanDistanceSquared = np.sum(np.dot(X1, -X2.T), axis = 0)
+    euclideanDistanceSquared = np.zeros((X1.shape[0], X2.shape[0]))
+    for idx in range(len(X1)):
+        for idx2 in range(len(X2)):
+            euclideanDistanceSquared[idx, idx2] = np.sum(np.square(X1[idx] - X2[idx2]))
+
+    print(euclideanDistanceSquared)
+    
+    gaussianKernel = np.exp(-euclideanDistanceSquared / (2 * sigma * sigma))
+    
+    print(gaussianKernel)
+    
+    return gaussianKernel
 
 
 def objective_function(X, y, a, kernel):
@@ -84,7 +98,7 @@ def objective_function(X, y, a, kernel):
     # print(a.T)
 
     # STUFF
-    secondSum = np.sum( (kernel(X, X.T)) * (a @ a.T) * (y @ y.T) )
+    secondSum = np.sum( (kernel(X, X)) * (a @ a.T) * (y @ y.T) )
     # secondSum = np.sum( (kernel(X, X.T)) * np.matmul(a, a.T) * np.matmul(y, y.T) )
 
     return alphaSum - 0.5 * secondSum
