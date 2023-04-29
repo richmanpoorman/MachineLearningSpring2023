@@ -1,0 +1,10 @@
+Name: Matthew Wong
+Time: I did across 2-3 days (so about 6-7 hours)
+Talk: I used Piazza to figure out most of my problems
+Help: I needed help with getting the jupyter notebook to work, 
+      but I was able to follow the instructions for the most part (however, I am not sure if I did it correctly)
+      
+      I needed some help from Piazza when solving the 'bool' has no attribute 'all' from the autograder for the calibrated
+      perceptron and standardize data 
+
+      I also had Aria help me figure out what was wrong with my standardize data function
